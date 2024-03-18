@@ -1,4 +1,5 @@
 #include <iostream>
+#include <array>
 
 using namespace std;
 
@@ -14,10 +15,15 @@ using namespace std;
 // general functions.
 int getChoice(string catalog, int choicesCount);
 string getAlphaSpacesText();
+string getDigSpacesText();
 
 // Substitute crypt functions.
 string substituteCrypt(string text, string key, int opType);
 string getSubstituteKey();
+
+// Polybus Crypt functions.
+string polybusCrypt(string text, string key, int opType);
+string getPolyBusKey();
 
 int main()
 {
@@ -29,9 +35,9 @@ int main()
         int crypt = getChoice("1- Substitute Crypt\n2- Polybuis Crypt\n3- XOR Crypt\n4- Exit", 4);
         if (crypt == SUBSTITUTE_CRYPT)
         {
+            int opType = getChoice("Do you want to (1)encrypt or (2)decrypt: ", 2);
             string text = getAlphaSpacesText();
             string key = getSubstituteKey();
-            int opType = getChoice("Do you want to (1)encrypt or (2)decrypt: ", 2);
 
             cout << '\n'
                  << substituteCrypt(text, key, opType) << '\n'
@@ -39,7 +45,13 @@ int main()
         }
         else if (crypt == POLYBUS_CRYPT)
         {
-            cout << "Not Implemented yet!" << endl;
+            int opType = getChoice("Do you want to (1)encrypt or (2)decrypt: ", 2);
+            string text = opType == ENCRYPT ? getAlphaSpacesText() : getDigSpacesText();
+            string key = getPolyBusKey();
+
+            cout << '\n'
+                 << polybusCrypt(text, key, opType) << '\n'
+                 << endl;
         }
         else if (crypt == XOR_CRYPT)
         {
@@ -99,6 +111,34 @@ string getAlphaSpacesText()
             }
         }
         cout << "INVALID! enter non empty text that contains alphabetic characters and spaces only: ";
+        getline(cin, text);
+    }
+    return text;
+}
+
+string getDigSpacesText()
+{
+    string text;
+    cout << "Enter the text: ";
+    getline(cin, text);
+    while (true)
+    {
+        if (text.length() != 0)
+        {
+            bool allValid = true;
+            for (int i = 0; i < text.length(); i++)
+            {
+                if (!isdigit(text[i]) && !isspace(text[i]))
+                {
+                    allValid = false;
+                }
+            }
+            if (allValid)
+            {
+                break;
+            }
+        }
+        cout << "INVALID! enter non empty text that contains digits and spaces only: ";
         getline(cin, text);
     }
     return text;
@@ -193,6 +233,112 @@ string getSubstituteKey()
             }
         }
         cout << "INVALID! please enter five different alphabetic characters only: ";
+        getline(cin, key);
+    }
+    return key;
+}
+
+string polybusCrypt(string text, string key, int opType)
+{
+    // generate encrypted alphabet
+    string encryptedAlphabet[25];
+    for (int i = 0; i < 5; i++)
+    {
+        for (int j = 0; j < 5; j++)
+        {
+            encryptedAlphabet[i * 5 + j] = string() + key[i] + key[j];
+        }
+    }
+
+    if (opType == ENCRYPT)
+    {
+
+        string result = "";
+        for (int i = 0; i < text.length(); i++)
+        {
+            if (isspace(text[i]))
+            {
+                result += text[i];
+            }
+            else
+            {
+                // as i and j have the same key, this boolean at the end is needed
+                result += encryptedAlphabet[tolower(text[i]) - 'a' - (tolower(text[i]) >= 'j')];
+            }
+        }
+        return result;
+    }
+    else
+    {
+        string result = "";
+        for (int i = 0; i < text.length(); i++)
+        {
+            if (isspace(text[i]))
+            {
+                result += text[i];
+                continue;
+            }
+
+            // this means that it is only one number without it's twin.
+            if (i + 1 == text.length())
+            {
+                break;
+            }
+
+            string encryptedLetter = string() + text[i] + text[i + 1];
+            // 25 is the encrypted alphabet size
+            for (int j = 0; j < 25; j++)
+            {
+                if (encryptedAlphabet[j] == encryptedLetter)
+                {
+                    // as i and j have the same key, we shift right by one starting from j
+                    result += ('a' + j + (j > 8));
+                }
+            }
+            // if it is a letter not space, we have read two chars.
+            i++;
+        }
+        return result;
+    }
+}
+
+string getPolyBusKey()
+{
+    string key;
+    const int KEY_LENGTH = 5;
+    cout << "Enter five digit key: ";
+    getline(cin, key);
+    while (true)
+    {
+        if (key.length() == KEY_LENGTH)
+        {
+            bool allValid = true;
+            for (int i = 0; i < key.length(); i++)
+            {
+                if (!isdigit(key[i]))
+                {
+                    allValid = false;
+                    break;
+                }
+                for (int j = i + 1; j < key.length(); j++)
+                {
+                    if (key[i] == key[j])
+                    {
+                        allValid = false;
+                        break;
+                    }
+                }
+                if (!allValid)
+                {
+                    break;
+                }
+            }
+            if (allValid)
+            {
+                break;
+            }
+        }
+        cout << "INVALID! please enter five different digits only: ";
         getline(cin, key);
     }
     return key;
