@@ -37,11 +37,11 @@ int main()
         }
         else if (crypt == POLYBUS_CRYPT)
         {
-            cout << "Not Implemented!" << endl;
+            cout << "Not Implemented yet!" << endl;
         }
         else if (crypt == XOR_CRYPT)
         {
-            cout << "Not Implemented!" << endl;
+            cout << "Not Implemented yet!" << endl;
         }
         else
         {
