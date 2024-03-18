@@ -21,6 +21,9 @@ string getSubstituteKey();
 
 int main()
 {
+    cout << "Welcome, we got some crypt algorithms for you!\n"
+         << "===========================================" << endl;
+
     while (true)
     {
         int crypt = getChoice("1- Substitute Crypt\n2- Polybuis Crypt\n3- XOR Crypt\n4- Exit", 4);
