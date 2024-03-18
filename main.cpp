@@ -1,5 +1,7 @@
 #include <iostream>
+#include <sstream>
 #include <array>
+#include <iomanip>
 
 using namespace std;
 
@@ -16,14 +18,20 @@ using namespace std;
 int getChoice(string catalog, int choicesCount);
 string getAlphaSpacesText();
 string getDigSpacesText();
+string getHexSpacesText();
+string getNonEmptyText();
 
 // Substitute crypt functions.
 string substituteCrypt(string text, string key, int opType);
 string getSubstituteKey();
 
-// Polybus Crypt functions.
+// Polybus crypt functions.
 string polybusCrypt(string text, string key, int opType);
 string getPolyBusKey();
+
+// Xor crypt functions.
+string xorCrypt(string text, string key, int opType);
+string getXorKey();
 
 int main()
 {
@@ -55,11 +63,19 @@ int main()
         }
         else if (crypt == XOR_CRYPT)
         {
-            cout << "Not Implemented yet!" << endl;
+            int opType = getChoice("Do you want to (1)encrypt or (2)decrypt: ", 2);
+            string text = opType == ENCRYPT ? getNonEmptyText() : getHexSpacesText();
+            string key = getXorKey();
+
+            cout << '\n'
+                 << xorCrypt(text, key, opType) << '\n'
+                 << endl;
         }
         else
         {
-            cout << "Good Bye!" << endl;
+            cout << '\n'
+                 << "Good Bye!" << '\n'
+                 << endl;
             break;
         }
     }
@@ -141,6 +157,52 @@ string getDigSpacesText()
         cout << "INVALID! enter non empty text that contains digits and spaces only: ";
         getline(cin, text);
     }
+    return text;
+}
+
+string getHexSpacesText()
+{
+    string text;
+    cout << "Enter the text: ";
+    getline(cin, text);
+    while (true)
+    {
+        if (text.length() != 0)
+        {
+            bool allValid = true;
+            for (int i = 0; i < text.length(); i++)
+            {
+                if (!isdigit(text[i]) && !isspace(text[i]) &&
+                    text[i] != 'a' && text[i] != 'b' &&
+                    text[i] != 'c' && text[i] != 'd' &&
+                    text[i] != 'e' && text[i] != 'f')
+                {
+                    allValid = false;
+                }
+            }
+            if (allValid)
+            {
+                break;
+            }
+        }
+        cout << "INVALID! enter non empty text that contains hex digits and spaces only: ";
+        getline(cin, text);
+    }
+    return text;
+}
+
+string getNonEmptyText()
+{
+    string text;
+    cout << "Enter the text: ";
+    getline(cin, text);
+
+    while (text.length() == 0)
+    {
+        cout << "INVALID! text length can't be zero: ";
+        getline(cin, text);
+    }
+
     return text;
 }
 
@@ -341,5 +403,82 @@ string getPolyBusKey()
         cout << "INVALID! please enter five different digits only: ";
         getline(cin, key);
     }
+    return key;
+}
+
+string xorCrypt(string text, string key, int opType)
+{
+    if (opType == ENCRYPT)
+    {
+        string result = "";
+        string hexResult = "";
+        stringstream stream;
+
+        int keyIndex = 0;
+        for (int i = 0; i < text.length(); i++)
+        {
+            if (keyIndex == key.length())
+            {
+                keyIndex = 0;
+            }
+
+            char encryptedChar = text[i] ^ key[keyIndex];
+
+            stream << setfill('0') << setw(2) << hex << (int)encryptedChar;
+            string hexChar = stream.str();
+            stream.str("");
+
+            result += encryptedChar;
+            hexResult += hexChar;
+
+            if (i != text.length() - 1)
+            {
+                hexResult += ' ';
+            }
+
+            keyIndex++;
+        }
+
+        return result + '\n' + hexResult;
+    }
+    else
+    {
+        string result;
+        unsigned int c;
+        stringstream ss(text);
+
+        int keyIndex = 0;
+        while (ss >> hex >> c)
+        {
+            if (c > 255)
+            {
+                continue;
+            }
+
+            c = c ^ key[keyIndex];
+            result += (char)c;
+            keyIndex++;
+
+            if (keyIndex == key.length())
+            {
+                keyIndex = 0;
+            }
+        }
+        return result;
+    }
+}
+
+string getXorKey()
+{
+    string key;
+    cout << "Enter the key: ";
+    getline(cin, key);
+
+    while (key.length() == 0)
+    {
+        cout << "INVALID! key can't be empty: ";
+        getline(cin, key);
+    }
+
     return key;
 }
