@@ -1,3 +1,8 @@
+// File: CS112_A2_T4_S9.10_20230267.cpp
+// Purpose: This program contains 3 crypts which are substitute crypt, polybus crypt and xor crypt.
+// Author 1: Omar Mostafa Saad - 20230267 - S9.10
+// Email: omar16220061622006@gmail.com
+
 #include <iostream>
 #include <sstream>
 #include <array>
