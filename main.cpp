@@ -33,7 +33,9 @@ int main()
             string key = getSubstituteKey();
             int opType = getChoice("Do you want to (1)encrypt or (2)decrypt: ", 2);
 
-            cout << substituteCrypt(text, key, opType) << endl;
+            cout << '\n'
+                 << substituteCrypt(text, key, opType) << '\n'
+                 << endl;
         }
         else if (crypt == POLYBUS_CRYPT)
         {
