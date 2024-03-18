@@ -69,7 +69,7 @@ int getChoice(string catalog, int choicesCount)
             }
         }
 
-        cout << "INVALID! please enter only from 1 to  " << choicesCount << ": ";
+        cout << "INVALID! please enter only from 1 to " << choicesCount << ": ";
         getline(cin, choice);
     }
 }
